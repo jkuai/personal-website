@@ -1,0 +1,23 @@
+body {
+    background-color: #CFD1E3;
+    text-align: center;
+}
+
+h1 {
+    font-family: 'Anonymous Pro';
+    font-size: 64px;
+
+    margin-top: 250px;
+    margin-bottom: 10px;
+}
+
+h2 {
+    font-family: 'Anonymous Pro';
+    font-size: 20px;
+}
+
+.container {
+    max-width: 600px;
+    margin: 0 auto;
+    text-align: center;
+}
