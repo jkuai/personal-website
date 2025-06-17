@@ -74,4 +74,116 @@ class WindowManager {
 
         return windowObj;
     }
+
+    handleMouseDown(e) {
+        // is a window being clicked?
+        const window = e.target.closest('.mac-window');
+        if (!window) return;
+
+        // if so bring that window to the front
+        const windowObj = this.windows.find(w => w.id === window.id);
+        if (windowObj) {
+            this.bringToFront(windowObj);
+        }
+
+        // handling control buttons on top of window
+        if (e.target.classList.contains('mac-window-control')) {
+            e.preventDefault();
+            const action = e.target.dataset.action;
+            this.handleControlAction(action, windowObj);
+            return;
+        }
+
+        // handling resize
+        if (e.target.classList.contains('mac-window-resize-handle')) {
+            e.preventDefault();
+            this.startResize(e, windowObj);
+            return;
+        }
+
+        // handling drag
+        if (e.target.closest('.mac-window-header')) {
+            e.preventDefault();
+            this.startDrag(e, windowObj);
+            return;
+        }
+    }
+
+    // when the mouse is moving on click
+    handleMouseMove(e) {
+        if (this.dragData) {
+            this.updateDrag(e);
+        } else if (this.resizeData) {
+            this.updateResize(e);
+        }
+    }
+
+    // reseting possible actions when mouse is released
+    handleMouseUp(e) {
+        this.dragData = null;
+        this.resizeData = null;
+    }
+
+    // starting drag action
+    startDrag(e, windowObj) {
+        // getting current position and size of window
+        const rect = windowObj.element.getBoundingClientRect();
+        this.dragData = {
+            window: windowObj,
+            offsetX: e.clientX - rect.left,
+            offsetY: e.clientY - rect.top
+        };
+    }
+
+    // updating drag action when mouse is held
+    updateDrag(e) {
+        if (!this.dragData) return;
+
+        const newX = e.clientX - this.dragData.offsetX;
+        const newY = e.clientY - this.dragData.offsetY;
+
+        // Keep window within view
+        const maxX = window.innerWidth - 100;
+        const maxY = window.innerHeight - 40;
+
+        const constrainedX = Math.max(0, Math.min(newX, maxX));
+        const constrainedY = Math.max(0, Math.min(newY, maxY));
+
+        this.dragData.window.element.style.left = constrainedX + 'px';
+        this.dragData.window.element.style.top = constrainedY + 'px';
+    }
+
+    // starting resize action
+    startResize(e, windowObj) {
+        const rect = windowObj.element.getBoundingClientRect();
+        this.resizeData = {
+            window: windowObj,
+            startX: e.clientX,
+            startY: e.clientY,
+            startWidth: rect.width,
+            startHeight: rect.height
+        };
+    }
+
+    // updating resize data when mouse is dragged
+    updateResize(e) {
+        if (!this.resizeData) return;
+
+        const deltaX = e.clientX - this.resizeData.startX;
+        const deltaY = e.clientY - this.resizeData.startY;
+
+        const newWidth = Math.max(300, this.resizeData.startWidth + deltaX);
+        const newHeigth = Math.max(200, this.resizeData.startHeight + deltaY);
+
+        // keep window in view
+        const rect = this.resizeData.window.element.getBoundingClientRect();
+        const maxWidth = window.innerWidth - rect.left;
+        const maxHeight = window.innerHeight - rect.top;
+
+        const constrainedWidth = Math.min(newWidth, maxWidth);
+        const constrainedHeight = Math.min(newHeigth, maxHeight);
+
+        this.resizeData.window.element.style.width = constrainedWidth + 'px';
+        this.resizeData.window.element.style.height = constrainedHeight + 'px';
+    }
 }
