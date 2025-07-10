@@ -1,0 +1,23 @@
+.mac-window {
+    position: fixed;
+    background-color: #CFD1E3;
+    backdrop-filter: blur(20px);
+    border-radius: 12px;
+    box-shadow: 0 20px 40px #C2C4DD;
+    border: 1-x solid black;
+
+    min-width: 300px;
+    min-height: 200px;
+    overflow: hidden;
+    user-select: none;
+    transition: box-shadow 0.2s ease;
+}
+
+.mac-window.active {
+    box-shadow: 0 25px 50px #C2C4DD;
+}
+
+.mac-window-header {
+    height: 40px;
+    /* more here */
+}
